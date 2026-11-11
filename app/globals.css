@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Colores del sistema (R G B). Cámbialos aquí y cambia todo el sitio. ── */
+:root {
+  --hueso: 247 245 242; /* #F7F5F2 fondo */
+  --carbon: 20 20 20; /* #141414 texto y botones */
+  --piedra: 138 134 128; /* #8A8680 detalles */
+  --piedra-texto: 104 100 95; /* gris piedra oscurecido para texto (contraste AA) */
+  --arena: 184 145 106; /* #B8916A acento */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lenis) {
+      scroll-behavior: smooth;
+    }
+  }
+  html.scroll-locked {
+    overflow: hidden;
+  }
+  body {
+    @apply bg-hueso font-body text-base leading-relaxed text-carbon antialiased;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection {
+    @apply bg-carbon text-hueso;
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--arena));
+    outline-offset: 3px;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-[1440px];
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+  }
+  .section {
+    padding-top: clamp(5rem, 11vw, 10rem);
+    padding-bottom: clamp(5rem, 11vw, 10rem);
+  }
+  .eyebrow {
+    @apply flex items-center gap-3 text-sm font-medium uppercase tracking-[0.16em] text-piedra-texto;
+  }
+  .eyebrow::before {
+    content: "";
+    @apply h-px w-8 bg-arena;
+  }
+  .h2 {
+    @apply font-display font-light leading-[1.04] tracking-[-0.035em];
+    font-size: clamp(2.25rem, 5.4vw, 4.75rem);
+  }
+  .lead {
+    @apply text-piedra-texto;
+    font-size: clamp(1rem, 1.25vw, 1.125rem);
+    line-height: 1.7;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Líneas del split text: aire para descendentes y acentos */
+.split-line {
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+/* ───── Hero: fondo → nombre gigante → casa recortada ───── */
+.hero-scene {
+  container-type: size;
+  /* Ancho de la casa, altura de su base sobre el borde inferior y desplazamiento lateral */
+  --casa-w: 150cqw;
+  --casa-base: 42cqh;
+  --casa-x: 0cqw;
+  --niebla: 236 212 202;
+}
+/* Posición del nombre gigante según el encuadre (vertical / horizontal) */
+.hero-word {
+  top: 19.5%;
+}
+/* Tablets en vertical (pantallas más "cuadradas") */
+@media (orientation: portrait) and (min-aspect-ratio: 2/3) {
+  .hero-word {
+    top: 10.5%;
+  }
+  .hero-scene {
+    --casa-w: 112cqw;
+    --casa-base: 41cqh;
+    --casa-x: 0cqw;
+  }
+}
+@media (min-width: 1024px), (orientation: landscape) {
+  .hero-word {
+    top: max(15%, 9rem);
+  }
+  .hero-scene {
+    --casa-w: min(66cqw, 122cqh);
+    --casa-base: 13cqh;
+    --casa-x: 0cqw;
+  }
+}
+/* El PNG trae ~10 % de margen transparente bajo la casa: se descuenta para apoyar la base */
+.hero-casa {
+  width: var(--casa-w);
+  left: calc(50% - var(--casa-w) / 2 + var(--casa-x));
+  bottom: calc(var(--casa-base) - var(--casa-w) * 0.058);
+}
+/* Tinte cálido del amanecer para que la casa comparta la luz del paisaje */
+.hero-casa-img {
+  filter: sepia(0.2) saturate(1.12) brightness(0.96) contrast(1.04);
+}
+.hero-casa-shadow {
+  left: 8%;
+  right: 8%;
+  bottom: 3%;
+  height: 16%;
+  background: radial-gradient(closest-side, rgb(38 22 14 / 0.6), rgb(38 22 14 / 0.22) 55%, transparent);
+}
+/* Cielo: oscurece la parte alta (detrás de la casa) para que se lean el nombre y los textos */
+.hero-haze {
+  background: linear-gradient(to bottom, rgb(44 30 52 / 0.62), rgb(60 38 50 / 0.3) 38%, transparent 62%);
+}
+.hero-top {
+  height: 9rem;
+  background: linear-gradient(to bottom, rgb(20 14 24 / 0.38), transparent);
+}
+/* Niebla que envuelve la base de la casa */
+.hero-fog {
+  bottom: calc(var(--casa-base) - 13cqh);
+  height: 30cqh;
+  background:
+    radial-gradient(48% 46% at 50% 52%, rgb(var(--niebla) / 0.95), rgb(var(--niebla) / 0.5) 45%, transparent 72%),
+    radial-gradient(40% 34% at 16% 60%, rgb(var(--niebla) / 0.6), transparent 70%),
+    radial-gradient(40% 34% at 84% 58%, rgb(var(--niebla) / 0.6), transparent 70%),
+    linear-gradient(to bottom, transparent, rgb(var(--niebla) / 0.35) 45%, rgb(var(--niebla) / 0.2) 70%, transparent);
+}
+
+/* Preloader: si el JS fallara, se retira solo */
+@keyframes preloader-failsafe {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+.preloader {
+  animation: preloader-failsafe 0.4s 4s forwards;
+}
+
+/* Proyectos: cuando GSAP fija la sección, el carrusel deja de ser scrollable */
+.is-pinned [data-viewport] {
+  overflow: visible;
+  scroll-snap-type: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
