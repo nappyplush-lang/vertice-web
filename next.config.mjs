@@ -1,12 +1,17 @@
+/** Subcarpeta donde se publica el sitio: https://nappyplush-lang.github.io/vertice-web */
+const basePath = "/vertice-web";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  images: {
-    formats: ["image/avif", "image/webp"],
-    qualities: [85],
-    deviceSizes: [360, 430, 640, 768, 1024, 1280, 1440, 1920, 2560],
-    imageSizes: [96, 160, 256, 384],
-  },
+  // Sitio 100 % estático (carpeta out/) para GitHub Pages
+  output: "export",
+  basePath,
+  assetPrefix: basePath,
+  trailingSlash: true,
+  // Las fotos se optimizan antes del build (scripts/optimizar-imagenes.mjs)
+  images: { unoptimized: true },
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
 };
 export default nextConfig;

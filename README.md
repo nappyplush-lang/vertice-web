@@ -4,8 +4,8 @@ Landing one-page. Next.js 15 (App Router) + TypeScript + Tailwind CSS + GSAP/Scr
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # compilación de producción
+npm run dev      # http://localhost:3000/vertice-web
+npm run build    # genera el sitio estático en out/
 ```
 
 ## Cambiar textos, cifras, proyectos y contacto
@@ -14,12 +14,13 @@ Todo está en **un solo archivo: `content/site.ts`**. Ningún componente tiene t
 
 - Nombre del estudio: `brand` y `hero.word` (el nombre gigante del hero).
 - WhatsApp: `whatsappNumber` (solo dígitos, con indicativo: `573001234567`).
-- Dominio final: `url` (lo usan el SEO, el sitemap y Open Graph).
+- Dirección pública: `url` (la usan el SEO, el sitemap y Open Graph).
 - Proyectos, servicios, pasos, testimonios: son listas; agrega o quita elementos y el diseño se adapta.
 
 ## Cambiar imágenes
 
-Reemplaza los archivos de `public/images/` **conservando el mismo nombre**. No hay que tocar código.
+Reemplaza los archivos de `public/images/` **conservando el mismo nombre**. No hay que tocar código:
+al hacer push a `main` el sitio se vuelve a generar con la foto nueva.
 
 | Archivo | Dónde aparece | Tamaño mínimo | Proporción |
 |---|---|---|---|
@@ -41,9 +42,12 @@ Notas del hero:
 - Si reemplazas `hero-casa.png`, conserva un margen transparente parecido (~10 % alrededor de la casa);
   si el margen cambia, ajusta esas variables.
 - Sin casa recortada: en `site.ts` pon `casa: null` y borra el import `heroCasa`.
-- Si cambias un formato (por ejemplo `.jpg` → `.webp`), cambia también el `import` en `site.ts`.
+- Si cambias un nombre o un formato (por ejemplo `.jpg` → `.png`), cámbialo también en `site.ts`.
 
-Next genera solo las versiones AVIF/WebP en cada tamaño (calidad 85), así que sube los originales grandes.
+Antes de cada build, `scripts/optimizar-imagenes.mjs` convierte cada foto a WebP (calidad 82) en anchos de
+640, 1080, 1600 y 2400 px, sin ampliar nunca el original, y el navegador descarga el que corresponde a la
+pantalla (`srcset`/`sizes`). Por eso conviene subir los originales grandes: una foto de 896 px solo genera
+640 y 896.
 
 ## Cambiar colores y tipografías
 
@@ -58,6 +62,7 @@ app/                 layout (SEO, fuentes, schema.org), page, sitemap, robots, i
 content/site.ts      ← contenido
 components/sections/ una sección por archivo (Navbar, Hero, Manifiesto, Pilares, Servicios,
                      Proyectos, Cifras, Proceso, Testimonios, Prensa, Contacto, Footer)
+scripts/             optimización de fotos a WebP (se ejecuta sola)
 components/ui/       Button, Icon, Logo, Img, RevealImage, Magnetic, Cursor, Preloader, WhatsAppButton
 components/providers SmoothScroll (Lenis) y ScrollEffects (animaciones por atributos data-*)
 lib/                 gsap, scroll, ready
@@ -70,10 +75,14 @@ Animaciones reutilizables: añade a cualquier elemento `data-split` (título lí
 
 No usa servidor: valida los campos y abre WhatsApp con el mensaje armado hacia `whatsappNumber`.
 
-## Desplegar en Vercel
+## Publicación en GitHub Pages
 
-1. En vercel.com → **Add New → Project** → importa este repositorio (`vertice-web`).
-2. No cambies nada: el proyecto está en la raíz y Next.js se detecta solo.
-3. **Deploy**. Después, pon tu dominio real en `url` dentro de `content/site.ts`.
+Dirección: https://nappyplush-lang.github.io/vertice-web
+
+Cada push a `main` ejecuta `.github/workflows/pages.yml`: instala, compila y publica la carpeta `out/`.
+En el repositorio debe estar **Settings → Pages → Source: GitHub Actions**.
+
+El sitio vive en la subcarpeta `/vertice-web`. Si cambia el nombre del repositorio o se usa un dominio propio,
+hay que cambiar `basePath` en `next.config.mjs` y `url` en `content/site.ts`.
 
 Las carpetas `imagenes/` y `referencias/` guardan los originales y las referencias de diseño; el sitio no las usa.

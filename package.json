@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "fotos": "node scripts/optimizar-imagenes.mjs",
+    "dev": "npm run fotos && next dev",
+    "build": "npm run fotos && next build && node scripts/limpiar-export.mjs",
+    "start": "npx serve out",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@types/react-dom": "^19.1.0",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.0"
   }

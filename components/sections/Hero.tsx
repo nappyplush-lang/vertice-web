@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef } from "react";
-import Image, { getImageProps } from "next/image";
 import Button from "@/components/ui/Button";
 import Magnetic from "@/components/ui/Magnetic";
+import Img from "@/components/ui/Img";
 import { site } from "@/content/site";
+import { fuentes } from "@/lib/fotos";
 import { countUp, gsap, MQ, useGSAP } from "@/lib/gsap";
 import { onReady } from "@/lib/ready";
 
@@ -13,15 +14,22 @@ const { hero } = site;
 /** Art direction: imagen vertical en pantallas verticales, horizontal en el resto. */
 const PORTRAIT = "(max-width: 1023px) and (orientation: portrait)";
 
-function ArtPicture({ desktop, mobile, alt, priority, blur }: { desktop: typeof hero.image.desktop; mobile: typeof hero.image.mobile; alt: string; priority?: boolean; blur?: boolean }) {
-  const common = { alt, sizes: "100vw", quality: 85, priority, placeholder: blur ? ("blur" as const) : ("empty" as const) };
-  const { props: d } = getImageProps({ ...common, src: desktop });
-  const { props: m } = getImageProps({ ...common, src: mobile });
+function ArtPicture({ desktop, mobile, alt }: { desktop: typeof hero.image.desktop; mobile: typeof hero.image.mobile; alt: string }) {
+  const d = fuentes(desktop);
+  const m = fuentes(mobile);
   return (
     <picture>
       <source media={PORTRAIT} srcSet={m.srcSet} sizes="100vw" width={m.width} height={m.height} />
-      {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
-      <img {...d} className="absolute inset-0 h-full w-full object-cover" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        {...d}
+        sizes="100vw"
+        alt={alt}
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 h-full w-full bg-cover bg-center object-cover"
+        style={{ backgroundImage: `url(${desktop.blur})` }}
+      />
     </picture>
   );
 }
@@ -64,7 +72,7 @@ export default function Hero() {
         {/* Escena: fondo → nombre gigante → casa recortada */}
         <div data-scene className="hero-scene absolute inset-0">
           <div data-bg className="absolute inset-x-0 -top-[7%] h-[107%]">
-            <ArtPicture desktop={hero.image.desktop} mobile={hero.image.mobile} alt={hero.image.alt} priority blur />
+            <ArtPicture desktop={hero.image.desktop} mobile={hero.image.mobile} alt={hero.image.alt} />
           </div>
 
           <div data-word className="hero-word pointer-events-none absolute inset-x-0 px-[5%] lg:pl-[var(--pad)] lg:pr-[var(--padr)]" aria-hidden="true">
@@ -88,11 +96,10 @@ export default function Hero() {
             <div data-casa className="hero-casa absolute">
               {/* Sombra de contacto */}
               <div aria-hidden="true" className="hero-casa-shadow absolute" />
-              <Image
+              <Img
                 src={hero.casa}
                 alt=""
                 priority
-                quality={85}
                 sizes="(max-width: 1023px) and (orientation: portrait) 160vw, (max-width: 1023px) 80vw, 66vw"
                 className="hero-casa-img relative block h-auto w-full"
               />
